@@ -53,15 +53,3 @@ namespace :deploy do
   end
 end
 
-# Upload linked_files (env) if they do not exist
-namespace :deploy do
-  namespace :check do
-    before :linked_files, :set_env do
-      on roles(:app), in: :sequence, wait: 10 do
-        unless test("[ -f #{shared_path}/.env ]")
-          upload! '/.env', "#{shared_path}/.env"
-        end
-      end
-    end
-  end
-end
