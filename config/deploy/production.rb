@@ -2,7 +2,7 @@
 # ======================
 # Defines a single server with a list of roles and multiple properties.
 # You can define all roles on a single server, or split them:
-server '3.95.251.128', user: 'deploy', roles: %w[app db web]
+server '54.196.74.37', user: 'deploy', roles: %w[app db web]
 
 # Define the rails environment
 set :rails_env, 'production'
