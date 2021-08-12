@@ -23,7 +23,7 @@ set :deploy_to, "/home/deploy/capistrano_app"
 # set :pty, true
 
 # Default value for :linked_files is []
-append :linked_files, "config/database.yml", "config/master.key", ".env"
+append :linked_files, "config/master.key", ".env"
 
 # Default value for linked_dirs is []
 append :linked_dirs, "log", "tmp/pids", "tmp/cache", "tmp/sockets", "public/system"
@@ -40,7 +40,28 @@ set :keep_releases, 5
 # Uncomment the following to require manually verifying the host key before first deploy.
 # set :ssh_options, verify_host_key: :secure
 
-# Defaults to nil (no asset cleanup is performed)
-# If you use Rails 4+ and you'd like to clean up old assets after each deploy,
-# set this to the number of versions to keep
-set :keep_assets, 2
+# Upload linked_files (master key) if they do not exist
+namespace :deploy do
+  namespace :check do
+    before :linked_files, :set_master_key do
+      on roles(:app), in: :sequence, wait: 10 do
+        unless test("[ -f #{shared_path}/config/master.key ]")
+          upload! 'config/master.key', "#{shared_path}/config/master.key"
+        end
+      end
+    end
+  end
+end
+
+# Upload linked_files (env) if they do not exist
+namespace :deploy do
+  namespace :check do
+    before :linked_files, :set_env do
+      on roles(:app), in: :sequence, wait: 10 do
+        unless test("[ -f #{shared_path}/.env ]")
+          upload! '/.env', "#{shared_path}/.env"
+        end
+      end
+    end
+  end
+end
